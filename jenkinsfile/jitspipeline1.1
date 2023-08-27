@@ -23,7 +23,7 @@ pipeline {
                         error "Invalid ACTION value. Please specify either 'start' or 'stop'."
                     }
 
-                    sh '''
+                    sh """
                     # Modify the PATH variables
                     export PATH=$PATH:/home/jits/.local/bin/
 
@@ -42,7 +42,7 @@ pipeline {
                     # Run the playbook with full path
                     #/home/jits/.local/bin/ansible-playbook /home/jits/newapp/playbook/${playbookName} -i /home/jits/newapp/myinventory/myinven.ini
 		    /home/jits/.local/bin/ansible-playbook /home/jits/newapp/playbook/${playbookName} -i /home/jits/newapp/myinventory/myinven.ini
-                    '''
+                    """
                 }
             }
         }
