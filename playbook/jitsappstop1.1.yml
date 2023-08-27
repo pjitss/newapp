@@ -39,8 +39,15 @@
       register: service_stop_result
 
     - name: check final status of services after attempting to stop
+      win_service:
+        name: "{{ item }}"
+      loop: "{{ services_list }}"
+      register: final_status_result
+      when: "'failed' not in final_status_result"
+
+    - name: Print final status of services
       debug:
-        msg: "service {{ item.item }} is now in {{ item.services[0].state }} state"
-      loop: "{{ service_stop_result.results }}"
-      when: item.changed
+        msg: "Service {{ item.item }} is now {{ item.services[0].state }}"
+      loop: "{{ final_status_result.results }}"
+      when: item.exists
 
