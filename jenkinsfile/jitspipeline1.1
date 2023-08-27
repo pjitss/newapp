@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     parameters {
-        choice(name: 'ACTION', choices: ['start', 'stop'], description: 'Select the desired action for the application.')
+        string(name: 'ACTION', defaultValue: 'start', description: 'Enter "start" to start the app or "stop" to stop the app')
     }
 
     stages {
@@ -14,9 +14,15 @@ pipeline {
         stage('Execute Ansible Playbook') {
             steps {
                 script {
-                    // Determine the playbook path based on the chosen action
-                    def playbookPath = (params.ACTION == 'start') ? "/home/jits/newapp/playbook/jitsappstart1.1.yml" : "/home/jits/newapp/playbook/jitsappstop1.1.yml"
-                    
+                    def playbookName = ""
+                    if (params.ACTION == 'start') {
+                        playbookName = 'jitsappstart1.1.yml'
+                    } else if (params.ACTION == 'stop') {
+                        playbookName = 'jitsappstop1.1.yml'
+                    } else {
+                        error "Invalid ACTION value. Please specify either 'start' or 'stop'."
+                    }
+
                     sh '''
                     # Modify the PATH variable
                     export PATH=$PATH:/home/jits/.local/bin/
@@ -34,11 +40,10 @@ pipeline {
                     which ansible-playbook
                         
                     # Run the playbook with full path
-                    /home/jits/.local/bin/ansible-playbook ''' + playbookPath + ''' -i /home/jits/newapp/myinventory/myinven.ini
+                    /home/jits/.local/bin/ansible-playbook /home/jits/newapp/playbook/${playbookName} -i /home/jits/newapp/myinventory/myinven.ini
                     '''
                 }
             }
-
         }
     }
 }
