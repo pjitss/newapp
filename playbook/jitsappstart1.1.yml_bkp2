@@ -8,33 +8,33 @@
     - name: ping hosts
       win_ping:
       register: ping_status
-
     - name: print ping status
       debug:
         msg: "ping status for {{ inventory_hostname }}:{{ ping_status.ping }}"
 
     - name: verify the services before start stop
       ansible.windows.win_service_info:
+      #     win_service_info:
         name: "{{ item }}"
       loop: "{{ services }}"
       register: services_info_result
 
     - name: checking if services are already in running state
       debug:
-        msg: "service {{ item.name }} is already in running state, hence not required any action"
-      when: item.exists and item.status == 'running'
+        msg: "service {{ item.item.name }} is already in running state, hense not required any action"
+      when: item.item.exists and item.item.state == 'running'
       loop: "{{ services_info_result.results }}"
 
     - name: start IIS related services
       win_service:
-        name: "{{ item.name }}"
+        name: "{{ item.item.name }}"
         state: started
-      when: item.exists and item.status != 'running'
+      when: item.item.exists and item.item.state != 'running'
       loop: "{{ services_info_result.results }}"
       register: service_start_result
 
     - name: check final status of services
       debug:
-        msg: "service {{ item.name }} is currently in {{ item.status }} state"
+        msg: "service {{item.item.name }} is currently in {{ item.state }} state"
       loop: "{{ service_start_result.results }}"
       when: item.changed
