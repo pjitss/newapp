@@ -1,0 +1,19 @@
+- name: "start iis service"
+  hosts: app
+  gather_facts: false
+  vars_files:
+    - ../vars/jits_app_var.yml  
+
+  tasks:
+    - name: "Get service status"
+      win_service:
+        name: "{{ item }}"
+      register: services_status
+      loop: "{{ service_start }}"
+
+    - name: "starting iis service"
+      win_service:
+        name: "{{ item.name }}"
+        state: started
+      loop: "{{ services_status.results }}"
+      when: item.state == 'stopped'
