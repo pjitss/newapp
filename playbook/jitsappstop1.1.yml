@@ -41,7 +41,7 @@
     - name: check final status of services after attempting to stop
       win_service:
         name: "{{ item }}"
-      loop: "{{ services_list }}"
+      loop: "{{ services }}"
       register: final_status_result
       when: "'failed' not in final_status_result"
 
