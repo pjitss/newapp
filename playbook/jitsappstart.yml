@@ -2,7 +2,7 @@
   hosts: app
   gather_facts: false
   vars_files:
-    - ../vars/jits_app_var.yml  
+    - ../vars/jits_var.yml  
 
   tasks:
     - name: "Get service status"
