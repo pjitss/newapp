@@ -27,7 +27,7 @@ pipeline {
                     which ansible-playbook
                         
                     # Run the playbook with full path
-                    /home/jits/.local/bin/ansible-playbook /home/jits/newapp/playbook/jitsappstop1.1.yml -i /home/jits/newapp/myinventory/myinven.ini
+                    /home/jits/.local/bin/ansible-playbook /home/jits/newapp/playbook/jitsappstart1.1.yml -i /home/jits/newapp/myinventory/myinven.ini
                     '''
                 }
             }
