@@ -15,8 +15,8 @@
     - name: verify the services before start stop
       win_service_info:
         name: "{{ item }}"
-        loop: "{{ services }}"
-        register: services_info_result
+      loop: "{{ services }}"
+       register: services_info_result
 
     - name: start IIS related services
       win_service:
@@ -29,7 +29,7 @@
     - name: checking if services are already in running state
       debug:
         msg: "service {{ item.item.name }} is already in running state, hense not required any action"
-      when: item.exist and item.status == 'running'
+      when: item.exists and item.status == 'running'
       loop: "{{ services_info_result.results }}"
 
     - name: check final status of services
