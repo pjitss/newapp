@@ -8,7 +8,7 @@
     - name: ping hosts
       win_ping:
       register: ping_status
-
+      
     - name: print ping status
       debug:
         msg: "ping status for {{ inventory_hostname }}:{{ ping_status.ping }}"
@@ -37,14 +37,8 @@
       loop: "{{ services_info_result.results }}"
       register: service_start_result
 
-    - name: Gather final status of services after starting
-      ansible.windows.win_service_info:
-        name: "{{ item.item.name }}"
-      loop: "{{ services_info_result.results }}"
-      register: final_service_info_result
-
-    - name: Print final status of services
+    - name: check final status of services
       debug:
-        msg: "service {{ item.item.name }} is now in {{ item.services[0].state }} state"
-      loop: "{{ final_service_info_result.results }}"
-      when: item.exists
+        msg: "service {{ item.item.name }} is currently in {{ item.services[0].state }} state"
+      loop: "{{ service_start_result.results }}"
+      when: item.changed
