@@ -16,7 +16,7 @@
       win_service_info:
         name: "{{ item }}"
       loop: "{{ services }}"
-       register: services_info_result
+      register: services_info_result
 
     - name: start IIS related services
       win_service:
