@@ -3,7 +3,7 @@
   gather_facts: no
   vars_files:
     - ../vars/jits_var.yml
-
+  
   tasks:
     - name: ping hosts
       win_ping:
@@ -19,12 +19,6 @@
       loop: "{{ services }}"
       register: services_info_result
 
-   - name: checking if services are already in running state
-      debug:
-        msg: "service {{ item.item.name }} is already in running state, hense not required any action"
-      when: item.exists and item.status == 'running'
-      loop: "{{ services_info_result.results }}"
-
     - name: start IIS related services
       win_service:
         name: "{{ item.item.name }}"
@@ -32,6 +26,12 @@
       when: item.exists and item.status != 'running'
       loop: "{{ services_info_result.results }}"
       register: service_start_result
+
+    - name: checking if services are already in running state
+      debug:
+        msg: "service {{ item.item.name }} is already in running state, hense not required any action"
+      when: item.exists and item.status == 'running'
+      loop: "{{ services_info_result.results }}"
 
     - name: check final status of services
       debug:
