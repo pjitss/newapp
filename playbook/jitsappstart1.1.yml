@@ -21,25 +21,24 @@
 
     - name: Debug services_info_result
       debug:
-        var: services_info_result    
+        var: services_info_result
 
     - name: checking if services are already in running state
       debug:
-        msg: "service {{ item.item.name }} is already in running state, hence not required any action"
-      when: item.item.exists and item.item.status == 'Running'
+        msg: "service {{ item.item }} is already in running state, hence not required any action"
+      when: item.exists and item.services[0].state == 'started'
       loop: "{{ services_info_result.results }}"
 
     - name: start IIS related services
-      win_service:
-        name: "{{ item.item.name }}"
+      ansible.windows.win_service:
+        name: "{{ item.item }}"
         state: started
-      when: item.item.exists and item.item.status != 'Running'
+      when: item.exists and item.services[0].state != 'started'
       loop: "{{ services_info_result.results }}"
       register: service_start_result
 
     - name: check final status of services
       debug:
-        msg: "service {{item.item.name }} is currently in {{ item.state }} state"
+        msg: "service {{ item.item.name }} is currently in {{ item.services[0].state }} state"
       loop: "{{ service_start_result.results }}"
       when: item.changed
-
