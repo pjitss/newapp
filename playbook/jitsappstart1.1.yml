@@ -45,6 +45,6 @@
 
     - name: Print final status of services
       debug:
-        msg: "service {{ item.item.name }} is now in {{ item.services[0].state }} state"
+        msg: "service {{ item.item }} is now in {{ item.services[0].state }} state"
       loop: "{{ final_service_info_result.results }}"
       when: item.exists
