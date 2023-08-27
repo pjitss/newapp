@@ -19,6 +19,10 @@
       loop: "{{ services }}"
       register: services_info_result
 
+    - name: Debug services_info_result
+      debug:
+        var: services_info_result    
+
     - name: checking if services are already in running state
       debug:
         msg: "service {{ item.item.name }} is already in running state, hence not required any action"
