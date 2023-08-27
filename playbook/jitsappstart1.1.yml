@@ -39,7 +39,7 @@
 
     - name: Gather final status of services after starting
       ansible.windows.win_service_info:
-        name: "{{ item.item.name }}"
+        name: "{{ item.item }}"
       loop: "{{ services_info_result.results }}"
       register: final_service_info_result
 
