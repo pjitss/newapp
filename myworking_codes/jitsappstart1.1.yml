@@ -1,0 +1,50 @@
+- name: check ping
+  hosts: app
+  gather_facts: no
+  vars_files:
+    - ../vars/jits_var.yml
+
+  tasks:
+    - name: ping hosts
+      win_ping:
+      register: ping_status
+
+    - name: print ping status
+      debug:
+        msg: "ping status for {{ inventory_hostname }}:{{ ping_status.ping }}"
+
+    - name: verify the services before start stop
+      ansible.windows.win_service_info:
+        name: "{{ item }}"
+      loop: "{{ services }}"
+      register: services_info_result
+
+    - name: Debug services_info_result
+      debug:
+        var: services_info_result
+
+    - name: checking if services are already in running state
+      debug:
+        msg: "service {{ item.item }} is already in running state, hence not required any action"
+      when: item.exists and item.services[0].state == 'started'
+      loop: "{{ services_info_result.results }}"
+
+    - name: start IIS related services
+      ansible.windows.win_service:
+        name: "{{ item.item }}"
+        state: started
+      when: item.exists and item.services[0].state != 'started'
+      loop: "{{ services_info_result.results }}"
+      register: service_start_result
+
+    - name: Gather final status of services after starting
+      ansible.windows.win_service_info:
+        name: "{{ item.item }}"
+      loop: "{{ services_info_result.results }}"
+      register: final_service_info_result
+
+    - name: Print final status of services
+      debug:
+        msg: "service {{ item.item }} is now in {{ item.services[0].state }} state"
+      loop: "{{ final_service_info_result.results }}"
+      when: item.exists
