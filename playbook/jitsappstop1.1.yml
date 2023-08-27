@@ -8,7 +8,7 @@
     - name: ping hosts
       win_ping:
       register: ping_status
-      
+
     - name: print ping status
       debug:
         msg: "ping status for {{ inventory_hostname }}:{{ ping_status.ping }}"
@@ -24,30 +24,30 @@
         msg: "service {{ item.item }} is currently in {{ item.services[0].state }} state"
       loop: "{{ services_info_result.results }}"
 
-    - name: checking if services are in running state
-      debug:
-        msg: "service {{ item.item }} is in running state, taking action to stop"
-      when: item.exists and item.services[0].state == 'started'
-      loop: "{{ services_info_result.results }}"
-
     - name: stop services that are in running state
-      ansible.windows.win_service:
-        name: "{{ item.item }}"
-        state: stopped
-      when: item.exists and item.services[0].state == 'started'
-      loop: "{{ services_info_result.results }}"
-      register: service_stop_result
+      block:
+        - name: Display services in running state
+          debug:
+            msg: "service {{ item.item }} is in running state, taking action to stop"
+          loop: "{{ services_info_result.results }}"
+          when: item.exists and item.services[0].state == 'started'
+
+        - name: Actually stop the services
+          ansible.windows.win_service:
+            name: "{{ item.item }}"
+            state: stopped
+          loop: "{{ services_info_result.results }}"
+          when: item.exists and item.services[0].state == 'started'
+          register: service_stop_result
 
     - name: check final status of services after attempting to stop
-      win_service:
+      ansible.windows.win_service_info:
         name: "{{ item }}"
       loop: "{{ services }}"
       register: final_status_result
-      when: "'failed' not in final_status_result"
 
     - name: Print final status of services
       debug:
         msg: "Service {{ item.item }} is now {{ item.services[0].state }}"
       loop: "{{ final_status_result.results }}"
       when: item.exists
-
