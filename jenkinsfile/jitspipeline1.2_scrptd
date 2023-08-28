@@ -1,0 +1,38 @@
+node {
+    // Define parameters
+    def ACTION = input message: 'Choose action:', parameters: [string(defaultValue: 'start', description: 'Enter "start" to start the app or "stop" to stop the app', name: 'ACTION')]
+
+    try {
+        stage('Checkout') {
+            git branch: 'main', credentialsId: 'ansible_user', url: 'https://github.com/pjitss/newapp.git'
+        }
+
+        stage('Execute Ansible Playbook') {
+            def playbookName = 'jitsappmanage.yml'
+            def actionState = (ACTION == 'start') ? 'started' : 'stopped'
+
+            sh """
+                # Modify the PATH variables
+                export PATH=$PATH:/home/jits/.local/bin/
+
+                # Set the PYTHONUSERBASE
+                export PYTHONUSERBASE=/home/jits/.local
+
+                # Show the modified PATH
+                echo "Modified PATH: $PATH"
+
+                # Check which Python interpreter Jenkins is using
+                which python3
+
+                # Show location of ansible-playbook
+                which ansible-playbook
+
+                # Run the playbook with full path
+                /home/jits/.local/bin/ansible-playbook /home/jits/newapp/playbook/${playbookName} -i /home/jits/newapp/myinventory/myinven.ini -e "ACTION=${actionState}"
+            """
+        }
+    } catch (Exception e) {
+        currentBuild.result = 'FAILURE'
+        throw e
+    }
+}
