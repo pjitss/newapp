@@ -1,0 +1,51 @@
+---
+- name: Manage services on App and DB servers
+  hosts: all
+  gather_facts: no
+  vars:
+    desired_state: "{{ ACTION }}ed"  # This will turn 'start' into 'started' and 'stop' into 'stopped'
+
+  tasks:
+    - name: Ping hosts
+      win_ping:
+      register: ping_status
+
+    - name: Print ping status
+      debug:
+        msg: "Ping status for {{ inventory_hostname }}:{{ ping_status.ping }}"
+
+    - name: Verify the services before start/stop
+      ansible.windows.win_service_info:
+        name: "{{ item }}"
+      loop: "{{ services }}"
+      register: services_info_result
+
+    - name: Debug services_info_result
+      debug:
+        var: services_info_result
+
+    - name: Checking if services are already in desired state
+      debug:
+        msg: "Service {{ item.item }} is already in {{ desired_state }} state, hence no action required."
+      when: item.exists and item.services[0].state == desired_state
+      loop: "{{ services_info_result.results }}"
+
+    - name: Set services to desired state
+      ansible.windows.win_service:
+        name: "{{ item.item }}"
+        state: "{{ desired_state }}"
+      when: item.exists and item.services[0].state != desired_state
+      loop: "{{ services_info_result.results }}"
+      register: service_action_result
+
+    - name: Gather final status of services after action
+      ansible.windows.win_service_info:
+        name: "{{ item.item }}"
+      loop: "{{ services_info_result.results }}"
+      register: final_service_info_result
+
+    - name: Print final status of services
+      debug:
+        msg: "Service {{ item.item }} is now in {{ item.services[0].state }} state."
+      loop: "{{ final_service_info_result.results }}"
+      when: item.exists
