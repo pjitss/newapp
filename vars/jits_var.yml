@@ -1,3 +1,5 @@
 services:
   - W3SVC
   - Themes
+  - KeyIso  ## CNG
+  - DsSvc   ##dtat sharing service  
