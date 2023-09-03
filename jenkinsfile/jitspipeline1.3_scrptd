@@ -1,6 +1,12 @@
+properties([
+    parameters([
+        string(name: 'ACTION', defaultValue: 'start', description: 'Enter "start" to start the app or "stop" to stop the app')
+    ])
+])
+
 node {
     // Define parameters
-    def ACTION = input message: 'Choose action:', parameters: [choice(choices: ['start', 'stop'], description: 'Choose the action for the services.', name: 'ACTION')]
+   // def ACTION = input message: 'Choose action:', parameters: [choice(choices: ['start', 'stop'], description: 'Choose the action for the services.', name: 'ACTION')]
 
     try {
         stage('Checkout') {
