@@ -1,8 +1,9 @@
 - name: check ping
-  hosts: "{{ comp }}"
+  hosts: app
   gather_facts: no
   vars_files:
-    - "/group_vars/{{ comp }}.yml"
+    - ../group_vars/app.yml
+
 
   tasks:
     - name: ping hosts
@@ -14,7 +15,7 @@
         msg: "ping status for {{ inventory_hostname }}:{{ ping_status.ping }}"
 
     - name: verify the services before start stop
-      win_service_info:  # Changed to correct module name
+      ansible.windows.win_service_info:
         name: "{{ item }}"
       loop: "{{ services }}"
       register: services_info_result
@@ -33,7 +34,7 @@
           when: item.exists and item.services[0].state == 'started'
 
         - name: Actually stop the services
-          win_service:
+          ansible.windows.win_service:
             name: "{{ item.item }}"
             state: stopped
           loop: "{{ services_info_result.results }}"
@@ -41,7 +42,7 @@
           register: service_stop_result
 
     - name: check final status of services after attempting to stop
-      win_service_info:
+      ansible.windows.win_service_info:
         name: "{{ item }}"
       loop: "{{ services }}"
       register: final_status_result

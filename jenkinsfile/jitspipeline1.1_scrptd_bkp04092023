@@ -1,7 +1,6 @@
 properties([
     parameters([
-        string(name: 'ACTION', defaultValue: 'start', description: 'Enter "start" to start the app or "stop" to stop the app'),
-	string(name: 'comp', defaultValue: 'app', description: 'Enter "app" or "db" ')
+        string(name: 'ACTION', defaultValue: 'start', description: 'Enter "start" to start the app or "stop" to stop the app')
     ])
 ])
 
