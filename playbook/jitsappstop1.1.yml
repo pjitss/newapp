@@ -1,5 +1,5 @@
 - name: check ping
-  hosts: "{{ comp }}"
+  hosts: all
   gather_facts: no
   vars_files:
     - "../group_vars/{{ comp }}.yml"
