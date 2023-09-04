@@ -1,6 +1,8 @@
 - name: check ping
   hosts: app
   gather_facts: no
+  vars_files:
+    - ../vars/jits_var.yml
 
   tasks:
     - name: ping hosts
