@@ -14,7 +14,7 @@
         msg: "ping status for {{ inventory_hostname }}:{{ ping_status.ping }}"
 
     - name: verify the services before start stop
-      win_service:
+      ansible.windows.win_service_info:
         name: "{{ item }}"
       loop: "{{ services }}"
       register: services_info_result
