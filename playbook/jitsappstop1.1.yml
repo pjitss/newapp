@@ -2,7 +2,7 @@
   hosts: all
   gather_facts: no
   vars_files:
-    - "../group_vars/{{ comp }}.yml"
+    - "../group_vars/app.yml"
 
   tasks:
     - name: ping hosts
