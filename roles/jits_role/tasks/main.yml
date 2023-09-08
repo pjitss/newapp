@@ -1,0 +1,28 @@
+- name: create script directory
+  win_file:
+    path: C:\Data\myscript
+    state: directory
+
+- block:
+    - name: copy health script
+      win_template:
+        src: myhealth1.sql.j2
+        dest: C:\Data\myscript\myhealth1.sql
+
+    - name: copy health script
+      win_template:
+        src: myhealth2.sql.j2
+        dest: C:\Data\myscript\myhealth2.sql
+  when: "PrimNode == {{ Prim_Node }}"
+
+- block:
+    - name: copy health script
+      win_template:
+        src: myhealth3.sql.j2
+        dest: C:\Data\myscript\myhealth3.sql
+
+    - name: copy health script
+      win_template:
+        src: myhealth4.sql.j2
+        dest: C:\Data\myscript\myhealth4.sql
+
