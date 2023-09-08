@@ -28,12 +28,6 @@ ansible_winrm_transport=basic
 ansible_user=jits
 ansible_password=redhat@123
 
-[secondary:vars]
-ansible_connection=winrm
-ansible_winrm_server_cert_validation=ignore
-ansible_winrm_transport=basic
-ansible_user=jits
-ansible_password=redhat@123
 """
 
                 writeFile file: '/tmp/myinven', text: inventoryContent
