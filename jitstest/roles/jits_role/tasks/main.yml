@@ -25,12 +25,12 @@
 
 - block:
     - name: copy health script
-      win_template:
+      template:
         src: myhealth3.sql.j2
         dest: C:\Data\myscript\myhealth3.sql
 
     - name: copy health script
-      win_template:
+      template:
         src: myhealth4.sql.j2
         dest: C:\Data\myscript\myhealth4.sql
   when: "'secondary' in group_names"
