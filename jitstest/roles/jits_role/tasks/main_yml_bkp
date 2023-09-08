@@ -1,10 +1,6 @@
-- name: print the variable for Primary Node
+- name: print the variable {{ Prim_Node }}
   debug:
-    msg: "Primary node name is {{ Prim_Node }}"
-
-- name: print the variable for Secondary Node
-  debug:
-    msg: "Secondary node name is {{ Sec_Node }}"
+    msg: sec node name is {{ Sec_Node }}}
 
 - name: create script directory
   win_file:
@@ -21,7 +17,7 @@
       win_template:
         src: myhealth2.sql.j2
         dest: C:\Data\myscript\myhealth2.sql
-  when: "Prim_Node == '{{ inventory_hostname }}'"
+  when: "Prim_Node == {{ Prim_Node }}"
 
 - block:
     - name: copy health script
@@ -33,4 +29,4 @@
       win_template:
         src: myhealth4.sql.j2
         dest: C:\Data\myscript\myhealth4.sql
-  when: "Sec_Node == '{{ inventory_hostname }}'"
+  when: "Sec_Node == {{ Sec_Node }}"
