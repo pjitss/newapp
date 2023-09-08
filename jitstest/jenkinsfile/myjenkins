@@ -13,8 +13,8 @@ node {
         }
 
         stage('Execute Ansible Playbook') {
-            def playbookPath = "/jitstest/playbook.yml"
-            def inventoryPath = "/jitstest/mytestinven"
+            // def playbookPath = "/jitstest/playbook.yml"
+            // def inventoryPath = "/jitstest/mytestinven"
             def extraVarsMap = [
                 Prim_Node: params.Prim_Node,
                 Sec_Node: params.Sec_Node
@@ -38,7 +38,7 @@ node {
 				which ansible-playbook
 
                 # Execute Ansible playbook
-                ansible-playbook ${playbookPath} -i ${inventoryPath} --extra-vars "${extraVarsMap.collect{ key, val -> "$key=$val" }.join(' ')}"
+                /home/jits/.local/bin/ansible-playbook /home/jits/newapp/jitstest/playbook.yml -i /home/jits/newapp/jitstest/mytestinven --extra-vars "${extraVarsMap.collect{ key, val -> "$key=$val" }.join(' ')}"
             """
         }
     } catch (Exception e) {
