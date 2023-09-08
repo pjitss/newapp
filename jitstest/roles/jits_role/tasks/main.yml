@@ -21,7 +21,7 @@
       win_template:
         src: myhealth2.sql.j2
         dest: C:\Data\myscript\myhealth2.sql
-  when: "Prim_Node == '{{ inventory_hostname }}'"
+  when: "'primary' in group_names"
 
 - block:
     - name: copy health script
@@ -33,4 +33,4 @@
       win_template:
         src: myhealth4.sql.j2
         dest: C:\Data\myscript\myhealth4.sql
-  when: "Sec_Node == '{{ inventory_hostname }}'"
+  when: "'secondary' in group_names"
