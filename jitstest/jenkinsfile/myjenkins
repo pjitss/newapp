@@ -38,7 +38,7 @@ node {
 				which ansible-playbook
 
                 # Execute Ansible playbook
-                /home/jits/.local/bin/ansible-playbook /home/jits/newapp/jitstest/playbook.yml -i /tmp/myinven --extra-vars "${extraVarsMap.collect{ key, val -> "$key=$val" }.join(' ')}"
+                /home/jits/.local/bin/ansible-playbook /home/jits/newapp/jitstest/playbook.yml -i /home/jits/newapp/jitstest/mytestinven --extra-vars "${extraVarsMap.collect{ key, val -> "$key=$val" }.join(' ')}"
             """
         }
     } catch (Exception e) {
