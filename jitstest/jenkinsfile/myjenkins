@@ -1,27 +1,48 @@
 properties([
     parameters([
-        string(defaultValue: '', name: 'Prim_Node'),
-        string(defaultValue: '', name: 'Sec_Node'),
-        string(defaultValue: 'db', name: 'DATABASE')
+        string(name: 'Prim_Node', defaultValue: '', description: 'Specify the primary node'),
+        string(name: 'Sec_Node', defaultValue: '', description: 'Specify the secondary node'),
+        string(name: 'DATABASE', defaultValue: 'db', description: 'Specify the database type')
     ])
 ])
 
 node {
+    try {
+        stage('Checkout') {
+            git branch: 'main', credentialsId: 'ansible_user', url: 'https://github.com/pjitss/newapp.git'
+        }
 
-    stage('git fetch') {
-        git branch: 'main', credentialsId: 'ansible_user', url: 'https://github.com/pjitss/newapp.git'
-    }
+        stage('Execute Ansible Playbook') {
+            def playbookPath = "/jitstest/playbook.yml"
+            def inventoryPath = "/jitstest/mytestinven"
+            def extraVarsMap = [
+                Prim_Node: params.Prim_Node,
+                Sec_Node: params.Sec_Node
+            ]
 
-    stage('Run Ansible Playbook') {
-        def extraVarsMap = [
-            Prim_Node: params.Prim_Node,
-            Sec_Node: params.Sec_Node
-        ]
-        
-        ansiblePlaybook (
-            playbook: "playbook.yml",
-            inventory: "mytestinven",
-            extraVars: extraVarsMap
-        )
+            sh """
+			
+				# Modify the PATH variables
+				export PATH=$PATH:/home/jits/.local/bin/
+
+				# Set the PYTHONUSERBASE
+				export PYTHONUSERBASE=/home/jits/.local
+
+				# Show the modified PATH
+				echo "Modified PATH: $PATH"
+
+				# Check which Python interpreter Jenkins is using
+				which python3
+
+				# Show location of ansible-playbook
+				which ansible-playbook
+
+                # Execute Ansible playbook
+                ansible-playbook ${playbookPath} -i ${inventoryPath} --extra-vars "${extraVarsMap.collect{ key, val -> "$key=$val" }.join(' ')}"
+            """
+        }
+    } catch (Exception e) {
+        currentBuild.result = 'FAILURE'
+        throw e
     }
 }
