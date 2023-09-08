@@ -1,7 +1,7 @@
 properties([
     parameters([
-        string(name: 'Prim_Node', defaultValue: '', description: 'Specify the primary node'),
-        string(name: 'Sec_Node', defaultValue: '', description: 'Specify the secondary node'),
+        string(name: 'Prim_Node', defaultValue: 'WIN-Q3ACHLFMOI8', description: 'Specify the primary node'),
+        string(name: 'Sec_Node', defaultValue: '192.168.0.135', description: 'Specify the secondary node'),
         string(name: 'DATABASE', defaultValue: 'db', description: 'Specify the database type')
     ])
 ])
