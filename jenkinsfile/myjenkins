@@ -19,8 +19,8 @@ node {
         ]
         
         ansiblePlaybook (
-            playbook: "myplay.yml",
-            inventory: "myinven",
+            playbook: "playbook.yml",
+            inventory: "mytestinven",
             extraVars: extraVarsMap
         )
     }

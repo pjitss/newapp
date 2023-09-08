@@ -1,3 +1,7 @@
+- name: print the variable {{ Prim_Node }}
+  debug:
+    msg: sec node name is {{ Sec_Node }}}
+
 - name: create script directory
   win_file:
     path: C:\Data\myscript
@@ -13,7 +17,7 @@
       win_template:
         src: myhealth2.sql.j2
         dest: C:\Data\myscript\myhealth2.sql
-  when: "PrimNode == {{ Prim_Node }}"
+  when: "Prim_Node == {{ Prim_Node }}"
 
 - block:
     - name: copy health script
@@ -25,4 +29,4 @@
       win_template:
         src: myhealth4.sql.j2
         dest: C:\Data\myscript\myhealth4.sql
-
+  when: "Sec_Node == {{ Sec_Node }}"
