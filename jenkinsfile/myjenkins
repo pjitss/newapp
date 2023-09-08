@@ -1,0 +1,27 @@
+properties([
+    parameters([
+        string(defaultValue: '', name: 'Prim_Node'),
+        string(defaultValue: '', name: 'Sec_Node'),
+        string(defaultValue: 'db', name: 'DATABASE')
+    ])
+])
+
+node {
+
+    stage('git fetch') {
+        git branch: 'main', credentialsId: 'ansible_user', url: 'https://github.com/pjitss/newapp.git'
+    }
+
+    stage('Run Ansible Playbook') {
+        def extraVarsMap = [
+            Prim_Node: params.Prim_Node,
+            Sec_Node: params.Sec_Node
+        ]
+        
+        ansiblePlaybook (
+            playbook: "myplay.yml",
+            inventory: "myinven",
+            extraVars: extraVarsMap
+        )
+    }
+}
