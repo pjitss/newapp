@@ -1,0 +1,61 @@
+properties(
+    [
+        parameters([
+            // ... Your parameters remain unchanged
+        ])
+    ]
+)
+
+node("$ENV") {
+    withKafkaLog(kafkaServers: "$KAFKASERVER", kafkaTopic: "cmp-request-${data.id}", metadata: 'Post Provision LogStream') {
+        cleanWs()
+
+        stage('Clone sigcap repo from GIT') {
+            wrap([$class: 'MaskPasswordsBuildWrapper', varPasswordPairs: [[password: "$GLB_GITURL", var: 'NULL']]]) {
+                git poll: false, branch: "$BRANCH", url: "$GLB_GITURL/$mygitlab/"
+            }
+        }
+
+        if (site == "PR") {
+            // App-related tasks
+            if (comp.startsWith("app_")) {
+                if (comp == "all") {
+                    stage("Stop all services for all app groups") {
+                        ansiblePlaybook(
+                            playbook: "playbooks/sigcap/service_stop.yml",
+                            extras: " -i \"env/PR/myinven.ini\" -l \"all:app\""
+                        )
+                    }
+                } else if (comp == "app_group1") {
+                    stage("Stop services for app_group1") {
+                        ansiblePlaybook(
+                            playbook: "playbooks/sig/service_stop.yml",
+                            extras: " -i \"env/PR/myinven.ini\" -l \"app_group1\""
+                        )
+                    }
+                } 
+                // ... Other app_group conditions...
+            }
+            
+            // DB-related tasks
+            if (db_comp.startsWith("db_")) {
+                if (db_comp == "db_all") {
+                    stage("Handle all services for all DB groups") {
+                        ansiblePlaybook(
+                            playbook: "playbooks/sigcap/db_all_service.yml",
+                            extras: " -i \"env/PR/myinven.ini\" -l \"all:db\""
+                        )
+                    }
+                } else if (db_comp == "db_group1") {
+                    stage("Handle services for db_group1") {
+                        ansiblePlaybook(
+                            playbook: "playbooks/sig/db_group1_service.yml",
+                            extras: " -i \"env/PR/myinven.ini\" -l \"db_group1\""
+                        )
+                    }
+                } 
+                // ... Other db_group conditions...
+            }
+        }
+    }
+}
